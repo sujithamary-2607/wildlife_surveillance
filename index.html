@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ForestGuard AI - Wildlife Protection System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    {% if page == "login" %}
+    <!-- LOGIN PAGE -->
+    <div class="container">
+        <div class="card" style="max-width: 450px; margin: 3rem auto;">
+            <div class="login-header">
+                <i class="fas fa-tree"></i>
+                <h1>ForestGuard AI</h1>
+                <p>Wildlife Protection System</p>
+            </div>
+            
+            {% if error %}
+            <div class="alert alert-danger">{{error}}</div>
+            {% endif %}
+            
+            <form method="POST" id="loginForm">
+                <div class="form-group">
+                    <label>Access Mode</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="mode" value="admin" required> 🛡️ Admin
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="mode" value="tourist" required> 🌿 Tourist
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Username</label>
+                    <input type="text" name="username" placeholder="Enter username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" name="password" placeholder="Enter password" required>
+                </div>
+                
+                <button type="submit" class="btn-primary btn-full">
+                    <i class="fas fa-sign-in-alt"></i> Access System
+                </button>
+            </form>
+            
+            <div class="demo-info">
+                <p>🌲 Protecting wildlife with AI technology</p>
+                <p>Demo: admin / 1234</p>
+            </div>
+        </div>
+    </div>
+    
+    {% elif page == "dashboard" %}
+    <!-- DASHBOARD PAGE -->
+    <div class="navbar">
+        <div class="logo">
+            <i class="fas fa-tree"></i>
+            <h1>ForestGuard AI</h1>
+        </div>
+        <div class="nav-links">
+            <div class="user-badge">
+                <i class="fas fa-user"></i>
+                <span>{{user if user else 'Tourist'}}</span>
+                <span class="user-mode">({{mode}})</span>
+            </div>
+            <a href="/logout" class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="welcome-banner">
+            <h2>Welcome, {{user if user else 'Explorer'}}! 🌿</h2>
+            <p>AI-powered wildlife monitoring and threat detection system</p>
+        </div>
+        
+        <div class="dashboard-grid">
+            <a href="/detect_image_page" class="dashboard-card">
+                <i class="fas fa-camera"></i>
+                <h3>Image Detection</h3>
+                <p>Upload photos to identify species and detect threats</p>
+            </a>
+            
+            <a href="/detect_video_page" class="dashboard-card">
+                <i class="fas fa-video"></i>
+                <h3>Video Detection</h3>
+                <p>Analyze video footage frame by frame</p>
+            </a>
+            
+            <a href="/detect_live_page" class="dashboard-card">
+                <i class="fas fa-eye"></i>
+                <h3>Live Detection</h3>
+                <p>Real-time camera capture and identification</p>
+            </a>
+            
+            <a href="/species_info_page" class="dashboard-card">
+                <i class="fas fa-leaf"></i>
+                <h3>Species Info</h3>
+                <p>Learn about wildlife species</p>
+            </a>
+            
+            <a href="/gallery" class="dashboard-card">
+                <i class="fas fa-images"></i>
+                <h3>Gallery</h3>
+                <p>View captured images</p>
+            </a>
+            
+            <a href="/logs" class="dashboard-card">
+                <i class="fas fa-history"></i>
+                <h3>Activity Logs</h3>
+                <p>View detection history</p>
+            </a>
+            
+            {% if mode=="admin" %}
+            <a href="/alerts" class="dashboard-card">
+                <i class="fas fa-bell"></i>
+                <h3>Alerts</h3>
+                <p>View danger alerts</p>
+            </a>
+            
+            <a href="/export_option" class="dashboard-card">
+                <i class="fas fa-download"></i>
+                <h3>Export Logs</h3>
+                <p>Export data as CSV/PDF</p>
+            </a>
+            
+            <a href="/settings" class="dashboard-card">
+                <i class="fas fa-cog"></i>
+                <h3>Settings</h3>
+                <p>Notification preferences</p>
+            </a>
+            
+            <a href="/users" class="dashboard-card">
+                <i class="fas fa-users"></i>
+                <h3>User Management</h3>
+                <p>Manage admin accounts</p>
+            </a>
+            {% endif %}
+            
+            <a href="/help" class="dashboard-card">
+                <i class="fas fa-question-circle"></i>
+                <h3>Help & Guidelines</h3>
+                <p>Safety tips and instructions</p>
+            </a>
+        </div>
+    </div>
+    
+    {% elif page == "detect_image" %}
+    <!-- IMAGE DETECTION PAGE -->
+    <div class="navbar">
+        <div class="logo"><i class="fas fa-tree"></i><h1>ForestGuard AI</h1></div>
+        <a href="/dashboard" class="back-link"><i class="fas fa-arrow-left"></i> Back</a>
+    </div>
+    <div class="container">
+        <div class="card">
+            <h2><i class="fas fa-camera"></i> Image Detection</h2>
+            <p class="subtitle">Upload an image to identify wildlife or detect threats</p>
+            
+            <form method="POST" enctype="multipart/form-data" id="imageForm">
+                <div class="form-group">
+                    <label>Select Image</label>
+                    <input type="file" name="file" accept="image/*" required>
+                </div>
+                <input type="hidden" name="lat" id="lat">
+                <input type="hidden" name="lon" id="lon">
+                <button type="submit" class="btn-primary"><i class="fas fa-search"></i> Detect</button>
+            </form>
+            
+            {% if result %}
+            <div class="alert alert-{{ 'danger' if safety=='DANGER' else 'warning' if safety=='WARNING' else 'safe' }}">
+                <h3>Detection Result</h3>
+                <p class="result-text"><strong>{{result}}</strong></p>
+                <p>Safety Level: <strong class="safety-{{ 'danger' if safety=='DANGER' else 'warning' if safety=='WARNING' else 'safe' }}">{{safety}}</strong></p>
+                {% if filename %}
+                <img src="/uploads/{{filename}}" class="result-image">
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <script src="/static/script.js"></script>
+    <script>initGeolocation();</script>
+    
+    {% elif page == "detect_video" %}
+    <!-- VIDEO DETECTION PAGE -->
+    <div class="navbar">
+        <div class="logo"><i class="fas fa-tree"></i><h1>ForestGuard AI</h1></div>
+        <a href="/dashboard" class="back-link"><i class="fas fa-arrow-left"></i> Back</a>
+    </div>
+    <div class="container">
+        <div class="card">
+            <h2><i class="fas fa-video"></i> Video Detection</h2>
+            <form method="POST" enctype="multipart/form-data" id="videoForm">
+                <div class="form-group">
+                    <label>Upload Video (MP4)</label>
+                    <input type="file" name="file" accept="video/*" required>
+                </div>
+                <input type="hidden" name="lat" id="lat">
+                <input type="hidden" name="lon" id="lon">
+                <button type="submit" class="btn-primary"><i class="fas fa-play"></i> Analyze Video</button>
+            </form>
+            
+            {% if video_filename %}
+            <div class="video-preview">
+                <h3>Video Preview</h3>
+                <video controls>
+                    <source src="/uploads/{{video_filename}}" type="video/mp4">
+                </video>
+            </div>
+            {% endif %}
+            
+            {% if result %}
+            <div class="alert alert-{{ 'danger' if safety=='DANGER' else 'warning' if safety=='WARNING' else 'safe' }}">
+                <h3>Detection Result</h3>
+                <p><strong>{{result}}</strong></p>
+                <p>Safety Level: <strong class="safety-{{ 'danger' if safety=='DANGER' else 'warning' if safety=='WARNING' else 'safe' }}">{{safety}}</strong></p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <script src="/static/script.js"></script>
+    <script>initGeolocation();</script>
+    
+    {% elif page == "detect_live" %}
+    <!-- LIVE DETECTION PAGE -->
+    <div class="navbar">
+        <div class="logo"><i class="fas fa-tree"></i><h1>ForestGuard AI</h1></div>
+        <a href="/dashboard" class="back-link"><i class="fas fa-arrow-left"></i> Back</a>
+    </div>
+    <div class="container">
+        <div class="card">
+            <h2><i class="fas fa-eye"></i> Live Camera Detection</h2>
+            <div class="video-container">
+                <img src="/video_feed" class="video-feed" alt="Live Feed">
+            </div>
+            <form method="POST" class="live-controls">
+                <button type="submit" name="capture" class="btn-primary"><i class="fas fa-camera"></i> Capture & Detect</button>
+                <button type="submit" name="exit" class="btn-danger"><i class="fas fa-power-off"></i> Exit Camera</button>
+            </form>
+            
+            {% if result %}
+            <div class="alert alert-{{ 'danger' if safety=='DANGER' else 'warning' if safety=='WARNING' else 'safe' }}">
+                <h3>Detection Result</h3>
+                <p><strong>{{result}}</strong></p>
+                <p>Safety Level: <strong class="safety-{{ 'danger' if safety=='DANGER' else 'warning' if safety=='WARNING' else 'safe' }}">{{safety}}</strong></p>
+                {% if filename %}
+                <img src="/uploads/{{filename}}" class="result-image">
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    {% elif page == "species_info" %}
+    <!-- SPECIES INFO PAGE -->
+    <div class="navbar">
+        <div class="logo"><i class="fas fa-tree"></i><h1>ForestGuard AI</h1></div>
+        <a href="/dashboard" class="back-link"><i class="fas fa-arrow-left"></i> Back</a>
+    </div>
+    <div class="container">
+        <div class="card">
+            <h2><i class="fas fa-leaf"></i> Species Information</h2>
+            <form method="POST">
+                <div class="form-group">
+                    <label>Enter Species Name</label>
+                    <input type="text" name="species" placeholder="e.g., Bengal Tiger, Indian Elephant" required>
+                </div>
+                <button type="submit" class="btn-primary"><i class="fas fa-search"></i> Get Information</button>
+            </form>
+            
+            {% if info %}
+            <div class="info-box">
+                {{info|safe}}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    {% elif page == "gallery" %}
+    <!-- GALLERY PAGE -->
+    <div class="navbar">
+        <div class="logo"><i class="fas fa-tree"></i><h1>ForestGuard AI</h1></div>
+        <a href="/dashboard" class="back-link"><i class="fas fa-arrow-left"></i> Back</a>
+    </div>
+    <div class="container">
+        <div class="card">
+            <h2><i class="fas fa-images"></i> Image Gallery</h2>
+            <div class="gallery-grid">
+                {% for item in gallery %}
+                <div class="gallery-item">
+                    <img src="/uploads/{{item.file}}" alt="Gallery Image">
+                </div>
+                {% else %}
+                <p class="empty-message">No images in gallery yet. Upload some images first!</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    {% elif page == "logs" %}
+    <!-- LOGS PAGE -->
+    <div class="navbar">
+        <div class="logo"><i class="fas fa-tree"></i><h1>ForestGuard AI</h1></div>
+        <a href="/dashboard" class="back-link"><i class="fas fa-arrow-left"></i> Back</a>
+    </div>
+    <div class="container">
+        <div class="card">
+            <h2><i class="fas fa-history"></i> Detection Logs</h2>
+            {% for log in logs %}
+            <div class="log-entry">
+                <div class="log-header">
+                    <span><i class="fas fa-clock"></i> {{log.time}}</span>
+                    {% if log.user %}
+                    <span><i class="fas fa-user"></i> {{log.user}}</span>
+                    {% endif %}
+                </div>
+                <div><i class="fas fa-map-marker-alt"></i> {{log.location}}</div>
+                <div class="log-image"><img src="/uploads/{{log.image}}"></div>
+                <div class="log-result"><strong>Result:</strong> {{log.result}}</div>
+            </div>
+            {% else %}
+            <p class="empty-message">No logs available yet</p>
+            {% endfor %}
+        </div>
+    </div>
+    
+    {% elif page == "alerts" %}
+    <!-- ALERTS PAGE -->
+    <div class="navbar">
+        <div class="logo"><i class="fas fa-tree"></i><h1>ForestGuard AI</h1></div>
+        <a href="/dashboard" class="back-link"><i class="fas fa-arrow-left"></i> Back</a>
+    </div>
+    <div class="container">
+        <div class="card">
+            <h2><i class="fas fa-bell"></i> Danger Alerts</h2>
+            {% for log in danger_logs %}
+            <div class="alert alert-danger">
+                <strong>⚠️ DANGER ALERT</strong><br>
+                <i class="fas fa-clock"></i> {{log.time}}<br>
+                <i class="fas fa-user"></i> {{log.user}}<br>
+                <i class="fas fa-map-marker-alt"></i> {{log.location}}<br>
+                <i class="fas fa-exclamation-triangle"></i> Result: {{log.result}}<br>
+                <img src="/uploads/{{log.image}}" class="alert-image">
+            </div>
+            {% else %}
+            <p class="empty-message">No active alerts</p>
+            {% endfor %}
+        </div>
+    </div>
+    
+    {% elif page == "export_option" %}
+    <!-- EXPORT PAGE -->
+    <div class="navbar">
+        <div class="logo"><i class="fas fa-tree"></i><h1>ForestGuard AI</h1></div>
+        <a href="/dashboard" class="back-link"><i class="fas fa-arrow-left"></i> Back</a>
+    </div>
+    <div class="container">
+        <div class="card" style="max-width: 500px; margin: 0 auto;">
+            <h2><i class="fas fa-download"></i> Export Logs</h2>
+            <form method="POST">
+                <div class="form-group">
+                    <label>Select Format</label>
+                    <select name="format" required>
+                        <option value="CSV">CSV (Excel Compatible)</option>
+                        <option value="PDF">PDF Document</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary"><i class="fas fa-download"></i> Export</button>
+            </form>
+        </div>
+    </div>
+    
+    {% elif page == "settings" %}
+    <!-- SETTINGS PAGE -->
+    <div class="navbar">
+        <div class="logo"><i class="fas fa-tree"></i><h1>ForestGuard AI</h1></div>
+        <a href="/dashboard" class="back-link"><i class="fas fa-arrow-left"></i> Back</a>
+    </div>
+    <div class="container">
+        <div class="card" style="max-width: 500px; margin: 0 auto;">
+            <h2><i class="fas fa-cog"></i> Notification Settings</h2>
+            <form method="POST">
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="notify" {% if notifications_enabled %}checked{% endif %}>
+                        <span>Enable Real-time Alerts</span>
+                    </label>
+                </div>
+                <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Save Settings</button>
+            </form>
+        </div>
+    </div>
+    
+    {% elif page == "users" %}
+    <!-- USER MANAGEMENT PAGE -->
+    <div class="navbar">
+        <div class="logo"><i class="fas fa-tree"></i><h1>ForestGuard AI</h1></div>
+        <a href="/dashboard" class="back-link"><i class="fas fa-arrow-left"></i> Back</a>
+    </div>
+    <div class="container">
+        <div class="card" style="max-width: 600px; margin: 0 auto;">
+            <h2><i class="fas fa-users"></i> User Management</h2>
+            
+            {% if message %}
+            <div class="alert alert-safe">{{message}}</div>
+            {% endif %}
+            
+            <h3>Add New Admin</h3>
+            <form method="POST" class="add-user-form">
+                <div class="form-group">
+                    <input type="text" name="new_user" placeholder="Username" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" name="new_pass" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn-primary"><i class="fas fa-user-plus"></i> Add Admin</button>
+            </form>
+            
+            <h3>Current Administrators</h3>
+            <div class="users-list">
+                {% for u in admins %}
+                <div class="user-item">
+                    <span><i class="fas fa-user-shield"></i> {{u}}</span>
+                    <form method="POST" style="margin: 0;">
+                        <input type="hidden" name="remove_user" value="{{u}}">
+                        <button type="submit" class="btn-danger-small"><i class="fas fa-trash"></i> Remove</button>
+                    </form>
+                </div>
+                {% else %}
+                <p class="empty-message">No admins found</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    {% elif page == "help" %}
+    <!-- HELP PAGE -->
+    <div class="navbar">
+        <div class="logo"><i class="fas fa-tree"></i><h1>ForestGuard AI</h1></div>
+        <a href="/dashboard" class="back-link"><i class="fas fa-arrow-left"></i> Back</a>
+    </div>
+    <div class="container">
+        <div class="card">
+            <h2><i class="fas fa-question-circle"></i> Help & Guidelines</h2>
+            
+            <div class="help-section alert-safe">
+                <h3>🌿 For Tourists</h3>
+                <ul>
+                    <li>Use Image/Video detection to safely identify wildlife from a distance</li>
+                    <li>Maintain safe distance from wild animals - never approach them</li>
+                    <li>Report any suspicious activity or injured animals to forest authorities</li>
+                    <li>Safety levels: SAFE (green), WARNING (orange), DANGER (red)</li>
+                </ul>
+            </div>
+            
+            <div class="help-section alert-warning">
+                <h3>🛡️ For Admins</h3>
+                <ul>
+                    <li>Monitor real-time threat alerts in the Alerts section</li>
+                    <li>Export logs for data analysis and reporting</li>
+                    <li>Manage admin accounts through User Management</li>
+                    <li>Configure notification settings for instant alerts</li>
+                </ul>
+            </div>
+            
+            <div class="help-section alert-danger">
+                <h3>⚠️ Danger Indicators</h3>
+                <p>The system will alert for:</p>
+                <ul>
+                    <li>Poaching activities and hunting equipment</li>
+                    <li>Dangerous predators (tigers, lions, snakes, etc.)</li>
+                    <li>Deforestation and illegal logging</li>
+                    <li>Human-wildlife conflict situations</li>
+                </ul>
+            </div>
+            
+            <div class="help-section">
+                <h3>📸 Tips for Best Results</h3>
+                <ul>
+                    <li>Upload clear, well-lit images for accurate identification</li>
+                    <li>Videos should be stable and focused on the subject</li>
+                    <li>Use the live camera feature for real-time monitoring</li>
+                    <li>Location services help track wildlife movement patterns</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</body>
+</html>
